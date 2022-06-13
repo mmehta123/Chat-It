@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { allUsersRoute } from '../utils/apiRoutes'
+import { allUsersRoute } from '../utils/apiRoutes';
+import Contacts from "../pages/Contacts";
+import Welcome from "../pages/Welcome";
 
 
 function Chat() {
     const [contacts, setContacts] = useState([]);
-    const [currentUser, setCurrentUser] = useState(undefined);
+    const [currentUser, setCurrentUser] = useState(undefined); 
+    const [currentChat,setCurrentChat]=useState(undefined);
     const navigate = useNavigate();
 
 
@@ -28,7 +31,7 @@ function Chat() {
         if (currentUser) {
             if (currentUser.isAvatarImageSet) {
                 const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-                console.log(data);
+                // console.log(data);
                 setContacts(data.data);
             } else {
                 navigate("/setAvatar")
@@ -40,10 +43,15 @@ function Chat() {
         getUserData()
     }, [currentUser]);
 
+    const handleChatChange=(chat)=>{
+        setCurrentChat(chat);
+    }
+
     return (
         <Container>
             <div className="container">
-                i m chat component
+            <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange}/>
+            <Welcome currentUser={currentUser}/>
             </div>
         </Container>
 
