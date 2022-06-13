@@ -15,6 +15,7 @@ const Welcome=({currentUser})=>{
 }
 
 export default Welcome;
+
 const Container=styled.div`
 display:flex;
 justify-content:center;

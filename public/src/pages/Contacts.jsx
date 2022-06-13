@@ -79,6 +79,7 @@ const Container = styled.div`
     display: flex;
     align-items: center;
     gap: 1rem;
+    color:white;
     justify-content: center;
     img {
       height: 2rem;
