@@ -1,7 +1,7 @@
 const User=require("../models/userModel")
 const bcrypt=require("bcrypt");
 
-const register = async(req, res, next) => {
+const register = async(req, res) => {
     const {username,email,password}=req.body;
     const usernameCheck= await User.findOne({username}).lean().exec();
     if(usernameCheck){
@@ -22,4 +22,20 @@ const register = async(req, res, next) => {
     return res.json({status:true,user})
 };
 
-module.exports = register;
+
+const login = async (req, res) => {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username }).lean().exec();
+    if (!user) {
+        return res.json({ msg: "user does not exists", status: false })
+    }
+    const passwordIsValid=await bcrypt.compare(password,user.password);
+    if(!passwordIsValid){
+        return res.json({msg:"xxxx-password is not valid",status:false});
+    }
+    return res.json({ status: true, user })
+};
+
+
+
+module.exports = {register,login};

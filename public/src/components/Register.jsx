@@ -1,11 +1,11 @@
 import { Link,useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import styled from "styled-components";
-import {ToastContainer,toast} from "react-toastify";
 import axios from "axios";
-import Logo from "../assets/logo.svg";
+import {ToastContainer,toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import "./css/register.css"
+import Logo from "../assets/logo.svg";
 import { registerRoute } from "../utils/apiRoutes";
 
 
@@ -24,7 +24,6 @@ function Register() {
         pauseOnHover:true,
         draggable:true,
         theme:"dark"
-        
     };
 
     const handleChange = (e) => {
