@@ -47,6 +47,15 @@ const setAvatar = async (req, res) => {
     return res.json({isSet:user.isAvatarImageSet,image:user.avatarImage})
 }
 
+const getAllUsers = async (req, res) => {
+    const userId=req.params.id;
+    const users=await User.find({_id:{$ne:userId}}).select([
+        "email","username","avatarImage","_id"
+    ]).lean().exec();
+    return res.json(users);
+
+}
 
 
-module.exports = {register,login,setAvatar};
+
+module.exports = {register,login,setAvatar,getAllUsers};

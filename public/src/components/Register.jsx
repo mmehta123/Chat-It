@@ -4,7 +4,6 @@ import styled from "styled-components";
 import axios from "axios";
 import {ToastContainer,toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
-import "./css/register.css"
 import Logo from "../assets/logo.svg";
 import { registerRoute } from "../utils/apiRoutes";
 
@@ -30,7 +29,6 @@ function Register() {
         setValues({
             ...values, [e.target.name]: e.target.value
         })
-
     }
 
     const handleSubmit = async(e) => {
@@ -83,7 +81,6 @@ function Register() {
     
 
     return (
-
         <>
             <FormContainer>
                 <form onSubmit={(e) => handleSubmit(e)}>

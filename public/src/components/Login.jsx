@@ -4,7 +4,6 @@ import styled from "styled-components";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
-import "./css/register.css"
 import Logo from "../assets/logo.svg";
 import { loginRoute } from "../utils/apiRoutes";
 
