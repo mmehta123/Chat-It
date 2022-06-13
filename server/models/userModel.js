@@ -6,7 +6,7 @@ const userSchema=new mongoose.Schema({
     password: { type: String, required: true, unique: true,max: 50 },
     confirmPassword: { type: String, required: false, min: 8 },
     isAvatarImageSet:{type:Boolean,default:false},
-    avatarInage:{type:String,default:""}
+    avatarImage:{type:String,default:""}
 },
 {
     versionKey:false,

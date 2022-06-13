@@ -36,6 +36,17 @@ const login = async (req, res) => {
     return res.json({ status: true, user })
 };
 
+const setAvatar = async (req, res) => {
+    const userid=req.params.id;
+    const avatarImage=req.body.image;
+    const user=await User.findByIdAndUpdate(userid,{
+        isAvatarImageSet:true,
+        avatarImage:avatarImage
+    },
+        { new: true });
+    return res.json({isSet:user.isAvatarImageSet,image:user.avatarImage})
+}
 
 
-module.exports = {register,login};
+
+module.exports = {register,login,setAvatar};

@@ -10,65 +10,98 @@ import loader from "../assets/loader.gif";
 import { setAvatarRoute } from "../utils/apiRoutes";
 
 function SetAvatar() {
-    const api = "https://api.multiavatar.com/45634367"
-    const navigate = useNavigate();
-    const [avatars, SetAvatars] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedAvatar, setSelectedAvatar] = useState(undefined);
+  const api = "https://api.multiavatar.com/45634367"
+  const navigate = useNavigate();
+  const [avatars, SetAvatars] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedAvatar, setSelectedAvatar] = useState(undefined);
 
-    const toastOptions = {
-        position: "bottom-right",
-        autoClose: "5000",
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark"
-    };
+  const toastOptions = {
+    position: "bottom-right",
+    autoClose: "5000",
+    pauseOnHover: true,
+    draggable: true,
+    theme: "dark"
+  };
 
+  useEffect(() => {
+    pictureLoader();
+    checkUserExist();
+  }, []);
 
-    const setProfile = async () => { };
-
-    useEffect(() => {
-        pictureLoader();
-    }, []);
-
-    // this function will load 4 pictures for selecting
-    const pictureLoader = async () => {
-        const data = [];
-        for (let i = 0; i < 5; i++) {
-            const image = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
-            const buffer = new Buffer(image.data);
-            data.push(buffer.toString("base64"));
-        }
-        SetAvatars(data);
-        setIsLoading(true);
+  // this function will load 4 pictures for selecting
+  const pictureLoader = async () => {
+    const data = [];
+    for (let i = 0; i < 4; i++) {
+      const image = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
+      const buffer = new Buffer(image.data);
+      data.push(buffer.toString("base64"));
     }
+    SetAvatars(data);
+    setIsLoading(false);
+  }
+  // this fuction will check if user logged out from local storage then it will navigate us to login
+  const checkUserExist=async()=>{
+    const user=await localStorage.getItem("chat-app-user");
+    if(!user){
+      navigate("/login");
+    }
+  }
 
-    return (
-        <>
-            <Container>
-                <div className="title-container">
-                    <h1>Pick an avatar as your profile picture</h1>
-                </div>
-                <div className="avatars">
-                    {
-                        avatars.map((avatar, index) => {
-                            return (
-                                <div key={index} className={`avatar ${selectedAvatar === index ? "selected" : ""}`}>
-                                    <img src={`data:image/svg+xml;base64,${avatar}`} alt="avatar"
-                                        onClick={() => { setSelectedAvatar(index) }} />
-                                </div>
-                            );
-                        })
-                    }
-                </div>
-            </Container>
-            <ToastContainer />
-        </>
-    );
+  
+
+  const setProfilePicture = async() => {
+    if (selectedAvatar === undefined) {
+      toast.error("Please select a profile picture", toastOptions);
+    }else{
+      const user= JSON.parse(localStorage.getItem("chat-app-user"));
+      const { data } = await axios.post(`${setAvatarRoute}/${user._id}`,{
+        image:avatars[selectedAvatar]
+      });
+      if(data.isSet){
+        user.isAvatarImageSet=true;
+        user.avatarImage=data.image;
+        localStorage.setItem("chat-app-user",JSON.stringify(user))
+      }else{
+        toast.error("Please try again after some time",toastOptions);
+      }
+    }
+  }
+
+  return (
+    <>
+      {
+        isLoading ? <Container>
+          <img src={loader} alt="loader" />
+        </Container> : (
+          <Container>
+            <div className="title-container">
+              <h1>Pick an avatar as your profile picture</h1>
+            </div>
+            <div className="avatars">
+              {
+                avatars.map((avatar, index) => {
+                  return (
+                    <div key={index} className={`avatar ${selectedAvatar === index ? "selected" : ""}`}>
+                      <img src={`data:image/svg+xml;base64,${avatar}`} alt="avatar"
+                        onClick={() => { setSelectedAvatar(index) }} />
+                    </div>
+                  );
+                })
+              }
+            </div>
+            <button className="submit-btn" onClick={setProfilePicture}>Set as Profile Picture</button>
+          </Container>
+        )
+      }
+      <ToastContainer />
+    </>
+  );
 }
 
 const Container = styled.div`
 display: flex;
+  // border:1px solid white;
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -90,7 +123,7 @@ display: flex;
     .avatar {
       border: 0.4rem solid transparent;
       padding: 0.4rem;
-      border-radius: 5rem;
+      border-radius: 5rem;  
       display: flex;
       justify-content: center;
       align-items: center;
