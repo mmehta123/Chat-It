@@ -1,9 +1,13 @@
 import styled from "styled-components";
 import Logout from "./Logout";
+import ChatInput from "./ChatInput";
+import Messages from "./Messages";
 
 
 const ChatContainer = ({ currentChat }) => {
-    console.log(currentChat)
+    const handleSendMsg = (msg) => {
+    }
+
     return (
         <Container>
             <div className="chat-header">
@@ -15,19 +19,12 @@ const ChatContainer = ({ currentChat }) => {
                         <h3>{currentChat.username}</h3>
                     </div>
                 </div>
-                <Logout/>
+                <Logout />
             </div>
-            
-
-            <div className="chat-messages">
-
-            </div>
-
-
-            <div className="chat-input"></div>
-
+            <Messages />
+            <ChatInput handleSendMsg={handleSendMsg} />
         </Container>
-        
+
     )
 }
 
