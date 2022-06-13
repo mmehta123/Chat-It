@@ -52,7 +52,6 @@ const getAllUsers = async (req, res) => {
     const users=await User.find({_id:{$ne:userId}}).select([
         "email","username","avatarImage","_id"
     ]).lean().exec();
-    console.log(users)
     return res.json(users);
 
 }

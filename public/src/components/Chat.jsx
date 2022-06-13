@@ -54,7 +54,7 @@ function Chat() {
                 <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange} />
                 {
                     currentChat === undefined ?
-                    <Welcome currentUser={currentUser} />:(<ChatContainer currentChat={currentChat}/>)
+                        <Welcome currentUser={currentUser} /> : (<ChatContainer currentChat={currentChat} currentUser={currentUser}/>)
                     
                         
                 }

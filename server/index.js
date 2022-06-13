@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const msgRoutes=require("./routes/messagesRoute");
 require("dotenv").config();
 const app = express();
 const userRoutes = require("./routes/userRoute");
@@ -17,6 +18,7 @@ const connect = () => {
 }
 
 app.use("/api/auth", userRoutes);
+app.use("/api/messages", msgRoutes);
 
 app.listen(process.env.PORT, async () => {
     try {
