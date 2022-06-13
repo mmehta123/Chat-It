@@ -3,7 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const app = express();
-const userRoutes=require("./routes/userRoute");
+const userRoutes = require("./routes/userRoute");
 
 
 
@@ -19,10 +19,10 @@ const connect = () => {
 app.use("/api/auth", userRoutes);
 
 app.listen(process.env.PORT, async () => {
-    try{
+    try {
         await connect();
         console.log("listening on Port " + process.env.PORT);
-    }catch{
+    } catch {
         console.log("connection failed");
     }
 });
