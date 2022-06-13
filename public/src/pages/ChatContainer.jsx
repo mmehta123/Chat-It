@@ -1,71 +1,105 @@
 import styled from "styled-components";
-import {useState,useEffect} from "react";
+import { useState, useEffect, useRef } from "react";
 import Logout from "./Logout";
 import ChatInput from "./ChatInput";
+import { v4 as uuidv4 } from "uuid";  
 import axios from "axios";
 import { getMessageRoute, SendMessageRoute } from "../utils/apiRoutes";
 
 
-const ChatContainer = ({ currentChat, currentUser }) => {
+const ChatContainer = ({ currentChat, currentUser, socket }) => {
 
-  const [messages,setMessages]=useState([]);
+  const [messages, setMessages] = useState([]);
 
-  const getMsg=async()=>{
+  const scrollRef = useRef();
+  const [arrivalMessage, setArrivalMessage] = useState(null);
 
-    const data=await axios.post(getMessageRoute,{
-      from:currentUser._id,
-      to:currentChat._id,
-    })
-    setMessages(data.data);
+  const getMsg = async () => {
+    if (currentChat) {
+      const data = await axios.post(getMessageRoute, {
+        from: currentUser._id,
+        to: currentChat._id,
+      })
+      setMessages(data.data);
+    }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getMsg();
-  },[currentChat]);
+  }, [currentChat]);
 
-  const handleSendMsg = async(msg) => {
-      await axios.post(SendMessageRoute,{
-        from:currentUser._id,
-        to:currentChat._id,
-        msg:msg,
-      }
-      )
+  const handleSendMsg = async (msg) => {
+    
+    socket.current.emit("send-msg", {
+      to: currentChat._id,
+      from: currentUser._id,
+      msg,
+    });
+
+    await axios.post(SendMessageRoute, {
+      from: currentUser._id,
+      to: currentChat._id,
+      msg: msg,
     }
-
-    return (
-        <Container>
-            <div className="chat-header">
-                <div className="user-details">
-                    <div className="avatar">
-                        <img src={`data:image/svg+xml;base64,${currentChat.avatarImage}`} alt="avatar" />
-                    </div>
-                    <div className="username">
-                        <h3>{currentChat.username}</h3>
-                    </div>
-                </div>
-                <Logout />
-            </div>
-           <div className="chat-messages">
-              {
-                messages.map((message)=>{
-                  return(
-                    <div>
-                      <div className={`message ${message.fromSelf ? "sended" :"received"}`}>
-                          <div className="content">
-                            <p>
-                              {message.message}
-                            </p>
-                          </div>
-                      </div>
-                    </div>
-                  )
-                })
-              }
-           </div>
-            <ChatInput handleSendMsg={handleSendMsg} />
-        </Container>
-
     )
+
+    const msgs = [...messages];
+    msgs.push({ fromSelf: true, message: msg });
+    setMessages(msgs);
+  }
+
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("msg-received", (msg) => {
+        setArrivalMessage({ fromSelf: false, message: msg });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
+    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage]);
+
+
+
+  return (
+    <Container>
+      <div className="chat-header">
+        <div className="user-details">
+          <div className="avatar">
+            <img src={`data:image/svg+xml;base64,${currentChat.avatarImage}`} alt="avatar" />
+          </div>
+          <div className="username">
+            <h3>{currentChat.username}</h3>
+          </div>
+        </div>
+        <Logout />
+      </div>
+      <div className="chat-messages">
+        {
+          messages.map((message) => {
+            return (
+              <div ref={scrollRef} key={uuidv4()}>
+                <div className={`message ${message.fromSelf ? "sended" : "received"}`}>
+                  <div className="content">
+                    <p>
+                      {message.message}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        }
+      </div>
+      <ChatInput handleSendMsg={handleSendMsg} />
+    </Container>
+
+  )
 }
 
 export default ChatContainer;

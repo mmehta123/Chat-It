@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { allUsersRoute } from '../utils/apiRoutes';
 import Contacts from "../pages/Contacts";
 import Welcome from "../pages/Welcome";
+import {io} from "socket.io-client"
 import ChatContainer from "../pages/ChatContainer"
+import { useRef } from "react";
 
 
 function Chat() {
@@ -13,15 +15,20 @@ function Chat() {
     const [currentUser, setCurrentUser] = useState(undefined);
     const [currentChat, setCurrentChat] = useState(undefined);
     const navigate = useNavigate();
+    const socket=useRef();
 
+    useEffect(()=>{
+        if(currentUser){
+            socket.current=io("http://localhost:5000");
+            socket.current.emit("add-user",currentUser._id);
+        }
+    },[currentUser]);
 
     const userCheck = async () => {
         if (!localStorage.getItem("chat-app-user")) {
-            // console.log("user not exists");
             navigate("/login");
         } else {
             setCurrentUser(await JSON.parse(localStorage.getItem("chat-app-user")));
-            // console.log("user exists ");
         }
     }
     useEffect(() => {
@@ -32,7 +39,6 @@ function Chat() {
         if (currentUser) {
             if (currentUser.isAvatarImageSet) {
                 const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-                // console.log(data);
                 setContacts(data.data);
             } else {
                 navigate("/setAvatar")
@@ -54,9 +60,9 @@ function Chat() {
                 <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange} />
                 {
                     currentChat === undefined ?
-                        <Welcome currentUser={currentUser} /> : (<ChatContainer currentChat={currentChat} currentUser={currentUser}/>)
-                    
-                        
+                        <Welcome currentUser={currentUser} /> 
+                        :
+                        (<ChatContainer currentChat={currentChat} currentUser={currentUser} socket={socket}/>)  
                 }
             </div>
         </Container>

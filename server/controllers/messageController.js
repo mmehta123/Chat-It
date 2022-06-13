@@ -31,7 +31,6 @@ const getAllMessage = async (req, res, next) => {
             }
         ).sort({updatedAt:1});
 
-        console.log(messages);
         
         const projectedMessages=messages.map((msg)=>{
             return {
