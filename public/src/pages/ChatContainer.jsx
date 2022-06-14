@@ -21,6 +21,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
         to: currentChat._id,
       })
       setMessages(data.data);
+      
     }
   }
 
@@ -44,14 +45,16 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
     )
 
     const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: msg });
+    const d=new Date();
+    msgs.push({ fromSelf: true, message: msg, time: new Date()});
     setMessages(msgs);
   }
 
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-received", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
+        
+        setArrivalMessage({ fromSelf: false, message: msg ,time:new Date()});
       });
     }
   }, []);
@@ -82,13 +85,18 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
       <div className="chat-messages">
         {
           messages.map((message) => {
+            const t=new Date(message.time);
+            const time=t.toLocaleString()
             return (
               <div ref={scrollRef} key={uuidv4()}>
                 <div className={`message ${message.fromSelf ? "sended" : "received"}`}>
                   <div className="content">
-                    <p>
-                      {message.message}
-                    </p>
+                    <div>
+                    <p>{message.message}</p>
+                    </div>
+                    <span className="time">
+                      {time}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -112,6 +120,14 @@ const Container = styled.div`
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     grid-template-rows: 15% 70% 15%;
   }
+
+  .time{
+        color:blue;
+        border:1px solid #4f04ff21;
+        border-radius:5px;
+        background-color:white; 
+      }
+
   .chat-header {
     display: flex;
     justify-content: space-between;
@@ -163,12 +179,14 @@ const Container = styled.div`
       }
     }
     .sended {
+      
       justify-content: flex-end;
       .content {
         background-color: #4f04ff21;
       }
     }
     .received {
+      
       justify-content: flex-start;
       .content {
         background-color: #9900ff20;

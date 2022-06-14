@@ -30,12 +30,12 @@ const getAllMessage = async (req, res, next) => {
                 users:{$all:[from,to]}  
             }
         ).sort({updatedAt:1});
-
         
         const projectedMessages=messages.map((msg)=>{
             return {
                 fromSelf:msg.sender.toString()===from,
-                message: msg.message.text
+                message: msg.message.text,
+                time:msg.createdAt
             }
         });
 
